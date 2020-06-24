@@ -3,7 +3,7 @@ import { CustomError } from "./custom-error"
 
 export class RequestValidationError extends CustomError {
 
-    statusCode = 500
+    statusCode = 400
 
     // ValidationError will return an array of errors. 
     constructor( public errors: ValidationError[] ) {

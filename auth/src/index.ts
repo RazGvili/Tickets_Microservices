@@ -1,54 +1,13 @@
-import express from 'express'
-
-// express doesn't add a .catch handler to the Promise returned by middleware
-import 'express-async-errors'
-
-import { json } from 'body-parser'
 import mongoose from 'mongoose'
-import cookieSession from "cookie-session"
 
-import { currentUserRouter } from './routes/current-user'
-import { signInRouter } from './routes/signin'
-import { signOutRouter } from './routes/signout'
-import { signUpRouter } from './routes/signup'
-import { errorHandler } from './middlewares/error-handler'
-import { NotFoundError } from "./errors/not-found-error"
+import { app } from './app'
 
 const port = 3000
-
-const app = express()
-
-// Running behind the nginx-ingress
-app.set('trust proxy', true)
-
-app.use(json())
-app.use(
-    cookieSession({
-        // Cancel encryption       
-        signed: false,
-        secure: true
-    })
-)
-
-
-// routes
-app.use(currentUserRouter)
-app.use(signInRouter)
-app.use(signOutRouter)
-app.use(signUpRouter)
-
-
-// 404
-app.all('*', () => {
-    throw new NotFoundError()
-})
-
-app.use(errorHandler)
-
 
 const startServerAsync = async () => {
 
     // Assure the JWT_KEY env was defined in the cluster
+        // Secret is defined imperatively with "kubectl create secret generic"
     if(!process.env.JWT_KEY) {
         throw new Error("JWT_KEY must be defined!");
     }
